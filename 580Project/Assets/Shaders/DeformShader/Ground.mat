@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Lava
+  m_Name: Ground
   m_Shader: {fileID: 4800000, guid: dd4a9989d91094ad782f2b1032870c4f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -25,10 +25,18 @@ Material:
     m_TexEnvs: []
     m_Ints: []
     m_Floats:
+    - _CornerExpand: 0.8
     - _CrackWidth: 0.04
+    - _HeightAmplitude: 0
+    - _HeightNoiseScale: 10
+    - _HeightOffset: 0
+    - _LavaBlend: 0.5
     - _LavaGlow: 1.5
     - _LavaPulseSpeed: 1
-    - _NoiseScale: 4
+    - _Mode: 0
+    - _NoiseScale: 14
+    - _WarpScale: 0
+    - _WarpStrength: 1
     m_Colors:
     - _GroundColor: {r: 0.24999997, g: 0.19999996, b: 0.17999998, a: 1}
     - _LavaColor: {r: 1, g: 0.39999998, b: 0, a: 1}
