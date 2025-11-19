@@ -21,6 +21,9 @@ Shader "Custom/Deform"
 
         // Corner rounding
         _CornerExpand("Corner Expansion", Range(0,3)) = 1.0
+
+        // Detail normal (per-pixel bump) strength
+        _DetailNormalStrength("Detail Normal Strength", Float) = 0.3
     }
 
     SubShader
@@ -35,7 +38,7 @@ Shader "Custom/Deform"
 
         Pass
         {
-            Name "ForwardUnlit"
+            Name "ForwardLit"
             Tags { "LightMode"="UniversalForward" }
 
             HLSLPROGRAM
@@ -43,6 +46,7 @@ Shader "Custom/Deform"
             #pragma fragment frag
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct Attributes
             {
@@ -76,6 +80,8 @@ Shader "Custom/Deform"
                 float  _HeightNoiseScale;
 
                 float  _CornerExpand;
+
+                float  _DetailNormalStrength;
             CBUFFER_END
 
             // -------- Hash & Worley 3D --------
@@ -135,7 +141,7 @@ Shader "Custom/Deform"
                 return float3(minDist1, minDist2, minDist3);
             }
 
-            // -------- Perlin-style 3D noise (for height) --------
+            // -------- Perlin-style 3D noise (for height / detail) --------
             float fade(float t)
             {
                 // 6t^5 - 15t^4 + 10t^3
@@ -195,7 +201,7 @@ Shader "Custom/Deform"
                 // corner metric: F3-F1 small when 3 cells meet
                 float cornerMetric = F3 - F1;
 
-                // make this less extreme than last version: scale denominator up
+                // make this less extreme: scale denominator up
                 float cornerFactor = saturate(1.0 - cornerMetric / (_CrackWidth * 4.0));
                 // emphasize corners a bit
                 cornerFactor = cornerFactor * cornerFactor;
@@ -253,7 +259,7 @@ Shader "Custom/Deform"
                 return OUT;
             }
 
-            // -------- Fragment --------
+            // -------- Fragment (lit + detail normal) --------
             float4 frag(Varyings IN) : SV_Target
             {
                 float3 positionWS = IN.positionWS;
@@ -275,24 +281,24 @@ Shader "Custom/Deform"
 
                 float tWidth = max(threshold2 - threshold1, 1e-5);
 
-                // Animated lava brightness
+                // Animated lava brightness (emissive-ish color basis)
                 float timeVal   = _Time.y * _LavaPulseSpeed;
                 float lavaPulse = 0.5 + 0.5 * sin(timeVal + worley.x * 12.0);
 
                 float3 groundColor   = _GroundColor.rgb;
                 float3 lavaBaseColor = _LavaColor.rgb * (1.0 + lavaPulse * _LavaGlow);
 
-                float3 finalColor;
+                float3 baseColor;
 
                 if (cellGap <= threshold1)
                 {
                     // Hard lava
-                    finalColor = lavaBaseColor;
+                    baseColor = lavaBaseColor;
                 }
                 else if (cellGap >= threshold2)
                 {
                     // Hard ground
-                    finalColor = groundColor;
+                    baseColor = groundColor;
                 }
                 else
                 {
@@ -300,10 +306,38 @@ Shader "Custom/Deform"
                     float w = saturate((cellGap - threshold1) / tWidth);
                     w = smoothstep(0.0, 1.0, w); // rounded easing
 
-                    finalColor = lerp(lavaBaseColor, groundColor, w);
+                    baseColor = lerp(lavaBaseColor, groundColor, w);
                 }
 
-                return float4(finalColor, 1.0);
+                // -------- Detail normal (per-pixel bump) --------
+                float3 N = normalize(IN.normalWS);
+
+                // Build a tangent basis from N
+                float3 up = (abs(N.y) < 0.999) ? float3(0,1,0) : float3(1,0,0);
+                float3 T  = normalize(cross(up, N));
+                float3 B  = cross(N, T);
+
+                // Use Perlin again to drive bumpiness
+                float3 pDetail = p * (_HeightNoiseScale * 1.5);
+                float  h1      = perlin3D(pDetail);           // [-1,1]
+                float  h2      = perlin3D(pDetail * 2.37);    // more detail
+                float  detail  = (h1 + 0.5 * h2);             // ~[-1.5,1.5]
+
+                // Perturb normal in tangent plane
+                float3 bump = N + (T * detail + B * detail) * _DetailNormalStrength;
+                N = normalize(bump);
+
+                // -------- Simple Lambert lighting with URP main light --------
+                Light mainLight = GetMainLight();
+                float3 L = normalize(-mainLight.direction);  // surface -> light
+                float  NdotL = saturate(dot(N, L));
+
+                // Ambient term so backfaces aren't totally black
+                float3 ambient = 0.1 * baseColor;
+
+                float3 litColor = ambient + baseColor * (NdotL * mainLight.color.rgb);
+
+                return float4(litColor, 1.0);
             }
 
             ENDHLSL
