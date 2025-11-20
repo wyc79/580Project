@@ -281,6 +281,27 @@ Shader "Custom/Deform"
 
                 float tWidth = max(threshold2 - threshold1, 1e-5);
 
+                // -------- Detail normal (per-pixel bump) --------
+                float3 N = normalize(IN.normalWS);
+
+                // Build a tangent basis from N
+                float3 up = (abs(N.y) < 0.999) ? float3(0,1,0) : float3(1,0,0);
+                float3 T  = normalize(cross(up, N));
+                float3 B  = cross(N, T);
+
+                // Use Perlin again to drive bumpiness
+                // float3 pDetail = p * (_HeightNoiseScale * 1.5);
+                float3 pDetail    = dir * _HeightNoiseScale;
+                float3 detail3D   = worley3D(pDetail);
+                // float  h1      = perlin3D(pDetail);           // [-1,1]
+                // float  h2      = perlin3D(pDetail * 2.37);    // more detail
+                // float  detail  = (h1 + 0.5 * h2);             // ~[-1.5,1.5]
+                float detail = detail3D.x;
+
+                // Perturb normal in tangent plane
+                float3 bump = N + (T * detail + B * detail) * _DetailNormalStrength;
+                
+
                 // Animated lava brightness (emissive-ish color basis)
                 float timeVal   = _Time.y * _LavaPulseSpeed;
                 float lavaPulse = 0.5 + 0.5 * sin(timeVal + worley.x * 12.0);
@@ -294,6 +315,7 @@ Shader "Custom/Deform"
                 {
                     // Hard lava
                     baseColor = lavaBaseColor;
+                    bump = N;
                 }
                 else if (cellGap >= threshold2)
                 {
@@ -307,29 +329,16 @@ Shader "Custom/Deform"
                     w = smoothstep(0.0, 1.0, w); // rounded easing
 
                     baseColor = lerp(lavaBaseColor, groundColor, w);
+                    bump = N;
                 }
 
-                // -------- Detail normal (per-pixel bump) --------
-                float3 N = normalize(IN.normalWS);
-
-                // Build a tangent basis from N
-                float3 up = (abs(N.y) < 0.999) ? float3(0,1,0) : float3(1,0,0);
-                float3 T  = normalize(cross(up, N));
-                float3 B  = cross(N, T);
-
-                // Use Perlin again to drive bumpiness
-                float3 pDetail = p * (_HeightNoiseScale * 1.5);
-                float  h1      = perlin3D(pDetail);           // [-1,1]
-                float  h2      = perlin3D(pDetail * 2.37);    // more detail
-                float  detail  = (h1 + 0.5 * h2);             // ~[-1.5,1.5]
-
-                // Perturb normal in tangent plane
-                float3 bump = N + (T * detail + B * detail) * _DetailNormalStrength;
                 N = normalize(bump);
+
+                
 
                 // -------- Simple Lambert lighting with URP main light --------
                 Light mainLight = GetMainLight();
-                float3 L = normalize(-mainLight.direction);  // surface -> light
+                float3 L = normalize(mainLight.direction);  // surface -> light
                 float  NdotL = saturate(dot(N, L));
 
                 // Ambient term so backfaces aren't totally black

@@ -27,7 +27,7 @@ Material:
     m_Floats:
     - _CornerExpand: 0.8
     - _CrackWidth: 0.04
-    - _DetailNormalStrength: 0
+    - _DetailNormalStrength: 0.51
     - _HeightAmplitude: 0
     - _HeightMapStrength: 0.5
     - _HeightNoiseScale: 10
