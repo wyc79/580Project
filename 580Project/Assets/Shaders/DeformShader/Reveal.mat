@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Ground
+  m_Name: Reveal
   m_Shader: {fileID: 4800000, guid: dd4a9989d91094ad782f2b1032870c4f, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -27,7 +27,7 @@ Material:
     m_Floats:
     - _CornerExpand: 0.8
     - _CrackWidth: 0.04
-    - _DetailNormalStrength: 0.51
+    - _DetailNormalStrength: 0.2
     - _HeightAmplitude: 0
     - _HeightMapStrength: 0.5
     - _HeightNoiseScale: 10
@@ -36,12 +36,15 @@ Material:
     - _LavaGlow: 1.5
     - _LavaPulseSpeed: 1
     - _Mode: 0
-    - _NoiseScale: 14
+    - _NoiseScale: 15
+    - _RevealFeather: 0.05
+    - _RevealRadius: 0.3673305
     - _WarpScale: 0
     - _WarpStrength: 1
     m_Colors:
     - _GroundColor: {r: 0.24999997, g: 0.19999996, b: 0.17999998, a: 1}
     - _LavaColor: {r: 1, g: 0.39999998, b: 0, a: 1}
+    - _RevealCenter: {r: 0, g: 0.5, b: 0, a: 0}
     - _SphereCenter: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

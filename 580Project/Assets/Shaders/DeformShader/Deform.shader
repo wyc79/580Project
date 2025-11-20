@@ -14,9 +14,6 @@ Shader "Custom/Deform"
         _LavaGlow("Glow Strength", Float) = 1.5
         _LavaBlend("Lava Blend", Range(0,1)) = 0.5
 
-        // Height controls
-        _HeightAmplitude("Height Amplitude", Float) = 0.15
-        _HeightOffset("Ground Above Lava", Float) = 0.10
         _HeightNoiseScale("Height Noise Scale", Float) = 2.0
 
         // Corner rounding
@@ -24,14 +21,22 @@ Shader "Custom/Deform"
 
         // Detail normal (per-pixel bump) strength
         _DetailNormalStrength("Detail Normal Strength", Float) = 0.3
+
+        // Reveal
+        _RevealCenter("Reveal Center (World)", Vector) = (0, 0, 0, 0)
+        _RevealRadius("Reveal Radius", Float) = 0.0
+        _RevealFeather("Reveal Feather", Float) = 0.5
+
+        // _RevealColor("Reveal Color", Color) = (1, 1, 1, 1)
     }
 
     SubShader
     {
         Tags
         {
-            "RenderType"="Opaque"
+            "RenderType"="Transparent"
             "RenderPipeline"="UniversalPipeline"
+            "Queue"="Transparent"
         }
 
         LOD 200
@@ -40,6 +45,9 @@ Shader "Custom/Deform"
         {
             Name "ForwardLit"
             Tags { "LightMode"="UniversalForward" }
+
+            Blend SrcAlpha OneMinusSrcAlpha   // standard alpha blending
+            ZWrite Off                      // don't write to depth buffer
 
             HLSLPROGRAM
             #pragma vertex vert
@@ -75,13 +83,15 @@ Shader "Custom/Deform"
                 float  _LavaGlow;
                 float  _LavaBlend;
 
-                float  _HeightAmplitude;
-                float  _HeightOffset;
                 float  _HeightNoiseScale;
 
                 float  _CornerExpand;
 
                 float  _DetailNormalStrength;
+
+                float4 _RevealCenter;
+                float  _RevealRadius;
+                float  _RevealFeather;
             CBUFFER_END
 
             // -------- Hash & Worley 3D --------
@@ -236,21 +246,9 @@ Shader "Custom/Deform"
                 float lavaMaskSoft = saturate(1.0 - cellGap / (localCrackWidth * 1.2));
                 float transition   = saturate(lavaMaskSoft * (1.0 - lavaMaskSoft) * 4.0);
 
-                // Finer Perlin for height
-                float3 pHeight    = p * _HeightNoiseScale;
-                float  baseNoise  = perlin3D(pHeight);          // ~[-1,1]
-                float  baseHeight = baseNoise * _HeightAmplitude;
-
-                float groundHeight = baseHeight + _HeightOffset * 0.5;
-                float lavaHeight   = baseHeight - _HeightOffset * 0.5;
-
-                float height = lerp(groundHeight, lavaHeight, lavaMask);
-
                 // Bend normals slightly towards inward direction near the rim
                 float3 inwardDir    = -dir;
                 float3 bentNormalWS = normalize(lerp(normalWS, inwardDir, transition * 0.5));
-
-                positionWS += bentNormalWS * height;
 
                 OUT.positionWS  = positionWS;
                 OUT.normalWS    = bentNormalWS;
@@ -263,6 +261,17 @@ Shader "Custom/Deform"
             float4 frag(Varyings IN) : SV_Target
             {
                 float3 positionWS = IN.positionWS;
+
+                // ----- Circular reveal mask -----
+                float distToCenter = distance(positionWS, _RevealCenter.xyz);
+
+                // _RevealRadius = where the edge is
+                // _RevealFeather = thickness of the blending band
+                float innerRadius = _RevealRadius - _RevealFeather * 0.5;
+                float outerRadius = _RevealRadius + _RevealFeather * 0.5;
+
+                // 1 inside innerRadius, 0 outside outerRadius, smooth in between
+                float revealMask = 1.0 - smoothstep(innerRadius, outerRadius, distToCenter);
 
                 float3 fromCenter = positionWS - _SphereCenter.xyz;
                 float  lenFC      = max(length(fromCenter), 1e-5);
@@ -296,11 +305,12 @@ Shader "Custom/Deform"
                 // float  h1      = perlin3D(pDetail);           // [-1,1]
                 // float  h2      = perlin3D(pDetail * 2.37);    // more detail
                 // float  detail  = (h1 + 0.5 * h2);             // ~[-1.5,1.5]
-                float detail = detail3D.x;
+                float  h2    = perlin3D(pDetail * 3);    // more detail
+                float detail = detail3D.x + 0.5*h2;
 
-                // Perturb normal in tangent plane
-                float3 bump = N + (T * detail + B * detail) * _DetailNormalStrength;
-                
+                // Perturb normal in tangent plane for ground detail
+                float3 groundDetailNormal = N + (T * detail + B * detail) * _DetailNormalStrength;
+                float3 lavaNormal = N; // Lava uses smooth normal
 
                 // Animated lava brightness (emissive-ish color basis)
                 float timeVal   = _Time.y * _LavaPulseSpeed;
@@ -310,17 +320,19 @@ Shader "Custom/Deform"
                 float3 lavaBaseColor = _LavaColor.rgb * (1.0 + lavaPulse * _LavaGlow);
 
                 float3 baseColor;
+                float3 finalNormal;
 
                 if (cellGap <= threshold1)
                 {
                     // Hard lava
                     baseColor = lavaBaseColor;
-                    bump = N;
+                    finalNormal = lavaNormal;
                 }
                 else if (cellGap >= threshold2)
                 {
                     // Hard ground
                     baseColor = groundColor;
+                    finalNormal = groundDetailNormal;
                 }
                 else
                 {
@@ -329,10 +341,10 @@ Shader "Custom/Deform"
                     w = smoothstep(0.0, 1.0, w); // rounded easing
 
                     baseColor = lerp(lavaBaseColor, groundColor, w);
-                    bump = N;
+                    finalNormal = normalize(lerp(lavaNormal, groundDetailNormal, w));
                 }
 
-                N = normalize(bump);
+                N = normalize(finalNormal);
 
                 
 
@@ -346,7 +358,7 @@ Shader "Custom/Deform"
 
                 float3 litColor = ambient + baseColor * (NdotL * mainLight.color.rgb);
 
-                return float4(litColor, 1.0);
+                return float4(litColor, revealMask);
             }
 
             ENDHLSL
