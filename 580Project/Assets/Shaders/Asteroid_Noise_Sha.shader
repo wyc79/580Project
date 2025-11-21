@@ -4,29 +4,29 @@ Shader "Custom/AsteroidCrater"
     {
         [MainColor] _BaseColor("Base Color", Color) = (0.25,0.18,0.12,1)
 
-        _NoiseScaleLarge("Large Noise Scale", Float) = 1.5
-        _NoiseScaleDetail("Detail Noise Scale", Float) = 3.0
+        _NoiseScaleLarge("Large Noise Scale", Float) = 2
+        _NoiseScaleDetail("Detail Noise Scale", Float) = 3.5
 
-        _CraterSize("Crater Size", Float) = 0.45
-        _CraterDepth("Crater Depth", Float) = 0.35
-        _DistortAmount("Voronoi Distort Amount", Float) = 0.3
+        _CraterSize("Crater Size", Float) = 1.1
+        _CraterDepth("Crater Depth", Float) = 0.91
+        _DistortAmount("Voronoi Distort Amount", Float) = 0.19
 
-        _FBMStrength("FBM Detail Strength", Float) = 0.1
-        _WarpStrength("Warp Strength", Float) = 0.3
-        _RimSharpness("Rim Sharpness", Float) = 3.0
+        _FBMStrength("FBM Detail Strength", Float) = 1.39
+        _WarpStrength("Warp Strength", Float) = 0.37
+        _RimSharpness("Rim Sharpness", Float) = 2.98
 
-        _Seed("Random Seed", Vector) = (0,0,0,0)
-        _ParallaxDepth("Parallax Depth", Float) = 1.2
+        _Seed("Random Seed", Vector) = (1,1,1,1)
+        _ParallaxDepth("Parallax Depth", Float) = 2.24
 
-        _DisplaceStrength("Displace Strength", Float) = 0.22
-        _NormalStrength("Normal Strength", Range(0,1)) = 0.7
+        _DisplaceStrength("Displace Strength", Float) = 0.3
+        _NormalStrength("Normal Strength", Range(0,1)) = 0.49
 
-        _AmbientColor("Ambient Color", Color) = (0.05,0.05,0.05,1)
+        _AmbientColor("Ambient Color", Color) = (0.0,0.05,0.05,1)
         _LightColor("Light Color", Color) = (1,0.9,0.7,1)
-        _LightDirection("Light Direction (World)", Vector) = (0.4,1,0.2,0)
+        _LightDirection("Light Direction (World)", Vector) = (-3.26,-1.43,1.41,0)
 
-        _SpecularIntensity("Specular Intensity", Range(0,2)) = 0.4
-        _Shininess("Shininess", Range(1,128)) = 12
+        _SpecularIntensity("Specular Intensity", Range(0,2)) = 0.46
+        _Shininess("Shininess", Range(1,128)) = 32
     }
 
     SubShader
