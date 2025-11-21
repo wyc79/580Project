@@ -2,7 +2,6 @@ Shader "FX/RadialBlur"
 {
     Properties
     {
-        _MainTex ("Input Texture", 2D) = "white" {}
         _BlurStrength ("Blur Strength", Range(0, 5)) = 1.0
         _BlurWidth ("Blur Width", Range(0, 1)) = 0.5
         _CenterX("Center X", Range(0, 1)) = 0.5
@@ -22,9 +21,10 @@ Shader "FX/RadialBlur"
             #pragma fragment frag
             
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
             
-            TEXTURE2D(_MainTex);
-            SAMPLER(sampler_MainTex);
+            TEXTURE2D(_BlitTexture);
+            SAMPLER(sampler_BlitTexture);
             
             CBUFFER_START(UnityPerMaterial)
                 float _BlurStrength;
@@ -32,36 +32,35 @@ Shader "FX/RadialBlur"
                 float _CenterX;
                 float _CenterY;
             CBUFFER_END
-
             
             struct Attributes
             {
-                float4 positionOS   : POSITION;
-                float2 uv           : TEXCOORD0;
+                uint vertexID : SV_VertexID;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct Varyings
             {
-                float4 positionCS   : SV_POSITION;
-                float2 uv           : TEXCOORD0;
+                float4 positionCS : SV_POSITION;
+                float2 uv         : TEXCOORD0;
+                UNITY_VERTEX_OUTPUT_STEREO
             };
             
-            Varyings vert(Attributes IN)
+            Varyings vert(Attributes input)
             {
-                Varyings OUT;
-                OUT.positionCS = TransformObjectToHClip(IN.positionOS.xyz);
-                OUT.uv = IN.uv;
+                Varyings output;
+                UNITY_SETUP_INSTANCE_ID(input);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
                 
-                #if UNITY_UV_STARTS_AT_TOP
-                    OUT.uv.y = 1 - OUT.uv.y;
-                #endif
+                output.positionCS = GetFullScreenTriangleVertexPosition(input.vertexID);
+                output.uv = GetFullScreenTriangleTexCoord(input.vertexID);
                 
-                return OUT;
+                return output;
             }
             
             half4 frag(Varyings IN) : SV_TARGET
             {
-                half4 originalColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
+                half4 originalColor = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, IN.uv);
                 
                 half samples[10];
                 samples[0] = -0.08;
@@ -87,7 +86,7 @@ Shader "FX/RadialBlur"
                 half4 sum = originalColor;
                 for(int n = 0; n < 10; n++)
                 {
-                    sum += SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv + dir * samples[n] * blurFactor);
+                    sum += SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, IN.uv + dir * samples[n] * blurFactor);
                 }
                 
                 sum *= (1.0 / 11.0);
