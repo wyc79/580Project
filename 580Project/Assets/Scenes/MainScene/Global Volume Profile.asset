@@ -29,7 +29,7 @@ MonoBehaviour:
   active: 1
   BlurStrength:
     m_OverrideState: 1
-    m_Value: 1.8
+    m_Value: 1.84
   BlurWidth:
     m_OverrideState: 1
     m_Value: 1.2
@@ -42,3 +42,6 @@ MonoBehaviour:
   EdgeThreshold:
     m_OverrideState: 1
     m_Value: 0.2
+  enableEffect:
+    m_OverrideState: 1
+    m_Value: 0

@@ -113,6 +113,12 @@ public class EdgeAndRadialBlurFeature : ScriptableRendererFeature
     {
         if (m_radialMaterial == null || m_edgeMaterial == null) return;
 
+        if (!VolumeManager.instance.stack.GetComponent<EdgeAndBlurEffectComponent>().IsActive())
+        {
+            return;
+        }
+        
+        
         if (renderingData.cameraData.cameraType == CameraType.Game)
         {
             m_ScriptablePass.ConfigureInput(ScriptableRenderPassInput.Color);

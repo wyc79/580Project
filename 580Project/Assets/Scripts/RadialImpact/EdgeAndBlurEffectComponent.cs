@@ -16,6 +16,11 @@ public class EdgeAndBlurEffectComponent : VolumeComponent, IPostProcessComponent
     public ColorParameter BackgroundColor = new ColorParameter(Color.black, true, false, true);
     public ClampedFloatParameter EdgeThreshold = new ClampedFloatParameter(0.2f, 0f, 1f);
     
-    public bool IsActive() => (BlurStrength.value > 0f || EdgeThreshold.value > 0f);
+    public BoolParameter enableEffect = new BoolParameter(false); 
+    public bool IsActive()
+    {
+        return enableEffect.value;
+    }
+    
     public bool IsTileCompatible() => true;
 }
