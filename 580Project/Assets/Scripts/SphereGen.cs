@@ -9,6 +9,22 @@ public class SphereGen : MonoBehaviour
     public int subdivisions = 3;
     public float radius = 1f;
 
+    [Header("Height Noise")]
+    public bool useHeightNoise = true;
+
+    // Main displacement
+    [Range(0f, 0.1f)]
+    public float heightAmplitude = 0.05f;    // max base bump
+
+    public float heightNoiseScale = 3f;      // frequency of bumps
+    public float heightNoiseOffset = 0f;     // change for different pattern
+
+    [Header("Peak Spikes")]
+    [Range(0f, 0.1f)]
+    public float spikeAmplitude = 0.02f;     // extra height only on peaks
+    [Range(0.5f, 1f)]
+    public float spikeThreshold = 0.8f;      // how high the noise must be to spike
+
     Mesh mesh;
     Dictionary<long, int> middlePointCache;
 
@@ -17,10 +33,22 @@ public class SphereGen : MonoBehaviour
         Generate();
     }
 
+    void OnEnable()
+    {
+        Generate();
+    }
+
     void Generate()
     {
-        mesh = new Mesh();
-        mesh.name = "Procedural Icosphere";
+        if (mesh == null)
+        {
+            mesh = new Mesh();
+            mesh.name = "Procedural Icosphere";
+        }
+        else
+        {
+            mesh.Clear();
+        }
 
         middlePointCache = new Dictionary<long, int>();
 
@@ -29,7 +57,7 @@ public class SphereGen : MonoBehaviour
 
         float t = (1.0f + Mathf.Sqrt(5.0f)) / 2.0f;
 
-        // Create 12 initial vertices
+        // 12 initial vertices of an icosahedron
         AddVertex(vertices, new Vector3(-1,  t,  0).normalized);
         AddVertex(vertices, new Vector3( 1,  t,  0).normalized);
         AddVertex(vertices, new Vector3(-1, -t,  0).normalized);
@@ -68,22 +96,64 @@ public class SphereGen : MonoBehaviour
                 int bc = GetMiddlePoint(b, c, vertices);
                 int ca = GetMiddlePoint(c, a, vertices);
 
-                newFaces.AddRange(new int[] { a, ab, ca });
-                newFaces.AddRange(new int[] { b, bc, ab });
-                newFaces.AddRange(new int[] { c, ca, bc });
-                newFaces.AddRange(new int[] { ab, bc, ca });
+                newFaces.Add(a);  newFaces.Add(ab); newFaces.Add(ca);
+                newFaces.Add(b);  newFaces.Add(bc); newFaces.Add(ab);
+                newFaces.Add(c);  newFaces.Add(ca); newFaces.Add(bc);
+                newFaces.Add(ab); newFaces.Add(bc); newFaces.Add(ca);
             }
             faceList = newFaces;
         }
 
-        // Build final mesh
+        // Apply radius + height noise + spikes
         for (int i = 0; i < vertices.Count; i++)
-            vertices[i] = vertices[i].normalized * radius;
+        {
+            Vector3 dir = vertices[i].normalized; // base normal / direction
+            float finalRadius = radius;
 
+            if (useHeightNoise && (heightAmplitude > 0f || spikeAmplitude > 0f))
+            {
+                // Use spherical direction for stable noise on the surface
+                float nx = dir.x * heightNoiseScale + heightNoiseOffset;
+                float ny = dir.y * heightNoiseScale + heightNoiseOffset;
+
+                float n = Mathf.PerlinNoise(nx, ny); // 0..1
+
+                // Base displacement: small bumps around radius
+                float baseHeight = (n - 0.5f) * 2f * heightAmplitude; // -amp..amp
+                finalRadius += baseHeight;
+
+                // Extra spike for high peaks (only when n is above the threshold)
+                if (n > spikeThreshold && spikeAmplitude > 0f)
+                {
+                    // fade-in factor from threshold to 1
+                    float spikeT = Mathf.InverseLerp(spikeThreshold, 1f, n);
+                    spikeT = spikeT * spikeT; // sharpen a bit
+
+                    float spike = spikeT * spikeAmplitude; // 0..spikeAmplitude
+                    finalRadius += spike;
+                }
+            }
+
+            vertices[i] = dir * finalRadius;
+        }
+
+        // Build mesh
         mesh.vertices = vertices.ToArray();
         mesh.triangles = faceList.ToArray();
+
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
+
+        // UVs (simple spherical mapping)
+        Vector2[] uvs = new Vector2[vertices.Count];
+        for (int i = 0; i < vertices.Count; i++)
+        {
+            Vector3 v = vertices[i].normalized;
+            float u = 0.5f + Mathf.Atan2(v.z, v.x) / (2f * Mathf.PI);
+            float vCoord = 0.5f - Mathf.Asin(v.y) / Mathf.PI;
+            uvs[i] = new Vector2(u, vCoord);
+        }
+        mesh.uv = uvs;
 
         GetComponent<MeshFilter>().sharedMesh = mesh;
     }

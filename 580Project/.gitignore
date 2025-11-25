@@ -4,6 +4,9 @@
 #
 .DS_store
 
+/[Pp]ackages/manifest.json
+/[Pp]ackages/packages-lock.json
+
 .utmp/
 /[Ll]ibrary/
 /[Tt]emp/
