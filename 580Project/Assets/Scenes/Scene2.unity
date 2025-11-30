@@ -547,7 +547,6 @@ MonoBehaviour:
   endRadius: 5
   duration: 3
   feather: 0.5
-
   radius: 0
 --- !u!1 &1681309305
 GameObject:
@@ -660,7 +659,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  
 --- !u!1 &1812122686
 GameObject:
   m_ObjectHideFlags: 0
