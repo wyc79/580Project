@@ -71,6 +71,7 @@ MonoBehaviour:
   m_Active: 1
   edgeShader: {fileID: 4800000, guid: 04eba41033610b5419b4bce45cc14ff2, type: 3}
   radialShader: {fileID: 4800000, guid: 4f4a6be4eb768f2488d786549e83b41c, type: 3}
+  radialNoiseShader: {fileID: 4800000, guid: 133cd682e0284db4db2568d667089cc9, type: 3}
   renderPassEvent: 550
 --- !u!114 &7833122117494664109
 MonoBehaviour:
