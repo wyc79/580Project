@@ -29,9 +29,10 @@ Shader "Custom/Deform"
     {
         Tags
         {
-            "RenderType"="Transparent"
+            // OPAQUE instead of Transparent
+            "RenderType"="Opaque"
             "RenderPipeline"="UniversalPipeline"
-            "Queue"="Transparent"
+            "Queue"="Geometry"
         }
 
         LOD 200
@@ -41,8 +42,9 @@ Shader "Custom/Deform"
             Name "ForwardLit"
             Tags { "LightMode"="UniversalForward" }
 
-            Blend SrcAlpha OneMinusSrcAlpha   // alpha for global translucency if you want
-            ZWrite Off
+            // Opaque blend & depth write ON
+            Blend One Zero
+            ZWrite On
 
             HLSLPROGRAM
             #pragma vertex vert

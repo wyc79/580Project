@@ -11,9 +11,11 @@ public class MultipleDeformCircleReveal : MonoBehaviour
     public float duration    = 3f;
     public float feather     = 0.5f;
 
-    public float radius;
+    [SerializeField] private bool triggered = false;
 
-    private float time;
+    // public float radius;
+
+    private float time = 0f;
 
     void Start()
     {
@@ -29,14 +31,26 @@ public class MultipleDeformCircleReveal : MonoBehaviour
 
     void Update()
     {
+        if (!triggered) 
+        {
+            if (time != 0f) time = 0f;
+            return;
+        }
+
         if (materials == null || materials.Length == 0) return;
 
         Vector3 center = revealCenter != null ? revealCenter.position : transform.position;
 
         time += Time.deltaTime;
         float t      = Mathf.Clamp01(time / duration);
-        // float radius = Mathf.Lerp(startRadius, endRadius, t);
-        radius = Mathf.Lerp(startRadius, endRadius, t);
+        if (t >= 1f)
+        {
+            triggered = false;
+            time = 0f;
+            return;
+        }
+        float radius = Mathf.Lerp(startRadius, endRadius, t);
+        // radius = Mathf.Lerp(startRadius, endRadius, t);
 
         foreach (var mat in materials)
         {
@@ -44,5 +58,12 @@ public class MultipleDeformCircleReveal : MonoBehaviour
             mat.SetVector("_RevealCenter", center);
             mat.SetFloat("_RevealRadius", radius);
         }
+    }
+
+
+    public void TriggerReveal()
+    {
+        triggered = true;
+        time = 0f;
     }
 }

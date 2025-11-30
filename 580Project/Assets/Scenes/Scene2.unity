@@ -403,7 +403,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MultipleDeformCircleReveal
   materials:
-  - {fileID: 2100000, guid: a5b0c626b1cd557499949c4c0651f079, type: 2}
   - {fileID: 2100000, guid: a19816f92b64e864ab183eb65bdc3ddc, type: 2}
   - {fileID: 2100000, guid: 80355ccc40b74d24f97dce7ced7c74d8, type: 2}
   - {fileID: 2100000, guid: fad1e48d52b141b48b41574a75234a83, type: 2}
@@ -413,12 +412,13 @@ MonoBehaviour:
   - {fileID: 2100000, guid: ae968b601111f05489d1df11eea57280, type: 2}
   - {fileID: 2100000, guid: 574343c5994168f49ae8670aea8156af, type: 2}
   - {fileID: 2100000, guid: fe3dfb3a9a3572644ae74e9bb8ca46c8, type: 2}
+  - {fileID: 2100000, guid: a5b0c626b1cd557499949c4c0651f079, type: 2}
   revealCenter: {fileID: 1591601209}
   startRadius: 0
   endRadius: 5
   duration: 3
   feather: 0.5
-  radius: 0
+  radius: -0
 --- !u!1 &1812122686
 GameObject:
   m_ObjectHideFlags: 0

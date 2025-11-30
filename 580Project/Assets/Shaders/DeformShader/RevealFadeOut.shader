@@ -25,7 +25,7 @@ Shader "Custom/RevealFadeOut"
             Tags { "LightMode"="UniversalForward" }
 
             Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
+            ZWrite On
 
             HLSLPROGRAM
             #pragma vertex vert
