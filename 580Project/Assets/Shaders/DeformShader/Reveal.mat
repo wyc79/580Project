@@ -37,14 +37,14 @@ Material:
     - _LavaPulseSpeed: 1
     - _Mode: 0
     - _NoiseScale: 15
-    - _RevealFeather: 0.05
-    - _RevealRadius: 0.5
+    - _RevealFeather: 0.5
+    - _RevealRadius: 5
     - _WarpScale: 0
     - _WarpStrength: 1
     m_Colors:
     - _GroundColor: {r: 0.24999997, g: 0.19999996, b: 0.17999998, a: 1}
     - _LavaColor: {r: 1, g: 0.39999998, b: 0, a: 1}
-    - _RevealCenter: {r: 0, g: 1, b: 0, a: 0}
+    - _RevealCenter: {r: 0, g: 0, b: 0, a: 0}
     - _SphereCenter: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -951,6 +951,9 @@ MonoBehaviour:
   EdgeThreshold:
     m_OverrideState: 1
     m_Value: 0.2
+  enableEffect:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &9001657382290151224
 MonoBehaviour:
   m_ObjectHideFlags: 3
