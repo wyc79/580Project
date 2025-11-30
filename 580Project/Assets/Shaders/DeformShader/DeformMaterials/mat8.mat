@@ -107,7 +107,7 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 1
     - _RevealFeather: 0.5
-    - _RevealRadius: 1.1857709
+    - _RevealRadius: 0
     - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
