@@ -487,67 +487,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1591601208
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1591601209}
-  - component: {fileID: 1591601210}
-  m_Layer: 0
-  m_Name: RevealCenter
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1591601209
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1591601208}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1812122687}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1591601210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1591601208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 785b24013a75d104da7621d2484f21b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MultipleDeformCircleReveal
-  materials:
-  - {fileID: 2100000, guid: a5b0c626b1cd557499949c4c0651f079, type: 2}
-  - {fileID: 2100000, guid: 80355ccc40b74d24f97dce7ced7c74d8, type: 2}
-  - {fileID: 2100000, guid: fad1e48d52b141b48b41574a75234a83, type: 2}
-  - {fileID: 2100000, guid: 79fea3b920257d349ac2db718d83a6dc, type: 2}
-  - {fileID: 2100000, guid: 79052f65678d8404ba0b053353c5853b, type: 2}
-  - {fileID: 2100000, guid: 21dff01d4f2e88a4998e79d505352b4a, type: 2}
-  - {fileID: 2100000, guid: ae968b601111f05489d1df11eea57280, type: 2}
-  - {fileID: 2100000, guid: 574343c5994168f49ae8670aea8156af, type: 2}
-  - {fileID: 2100000, guid: fe3dfb3a9a3572644ae74e9bb8ca46c8, type: 2}
-  - {fileID: 2100000, guid: a19816f92b64e864ab183eb65bdc3ddc, type: 2}
-  revealCenter: {fileID: 1591601209}
-  startRadius: 0
-  endRadius: 5
-  duration: 3
-  feather: 0.5
-  triggered: 0
 --- !u!1 &1681309305
 GameObject:
   m_ObjectHideFlags: 0
@@ -668,6 +607,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1812122687}
+  - component: {fileID: 1812122688}
   m_Layer: 0
   m_Name: Forest2Custom
   m_TagString: Untagged
@@ -688,10 +628,34 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1591601209}
   - {fileID: 248542557}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1812122688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812122686}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 785b24013a75d104da7621d2484f21b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MultipleDeformCircleReveal
+  materials:
+  - {fileID: 2100000, guid: a5b0c626b1cd557499949c4c0651f079, type: 2}
+  - {fileID: 2100000, guid: 80355ccc40b74d24f97dce7ced7c74d8, type: 2}
+  - {fileID: 2100000, guid: fad1e48d52b141b48b41574a75234a83, type: 2}
+  - {fileID: 2100000, guid: 79fea3b920257d349ac2db718d83a6dc, type: 2}
+  - {fileID: 2100000, guid: 79052f65678d8404ba0b053353c5853b, type: 2}
+  - {fileID: 2100000, guid: 21dff01d4f2e88a4998e79d505352b4a, type: 2}
+  - {fileID: 2100000, guid: ae968b601111f05489d1df11eea57280, type: 2}
+  - {fileID: 2100000, guid: 574343c5994168f49ae8670aea8156af, type: 2}
+  - {fileID: 2100000, guid: fe3dfb3a9a3572644ae74e9bb8ca46c8, type: 2}
+  - {fileID: 2100000, guid: a19816f92b64e864ab183eb65bdc3ddc, type: 2}
+  sphereDriver: {fileID: 11400000, guid: b81d72a7b511e0e4a854cc11bbed18de, type: 2}
+  triggered: 0
 --- !u!1 &1988757623
 GameObject:
   m_ObjectHideFlags: 0
