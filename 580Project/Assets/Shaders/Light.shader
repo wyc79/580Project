@@ -4,13 +4,11 @@ Shader "Custom/Asteroid_FireSurface"
     {
         [MainColor] _BaseColor("Base Color", Color) = (0.25,0.18,0.12,1)
 
-        // --- NEW: Rim / Fresnel Effect (边缘发光核心) ---
         [Header(Rim Atmosphere)]
-        [HDR] _RimColor("Rim Color (Fire)", Color) = (1, 0.4, 0.0, 1) // 默认高亮橙色
-        _RimPower("Rim Power", Range(0.1, 8.0)) = 3.0                  // 边缘范围（越小范围越大）
-        _RimStrength("Rim Strength", Range(0, 20.0)) = 5.0             // 边缘亮度强度
+        [HDR] _RimColor("Rim Color (Fire)", Color) = (1, 0.4, 0.0, 1)
+        _RimPower("Rim Power", Range(0.1, 8.0)) = 3.0                 
+        _RimStrength("Rim Strength", Range(0, 20.0)) = 5.0           
 
-        // --- Emission / Glow Properties ---
         [Header(Inner Core Glow)]
         [HDR] _EmissionColor("Core Glow Color", Color) = (1, 0.1, 0.0, 1)
         _EmissionThreshold("Glow Depth Threshold", Range(-2, 2)) = 0.2 
@@ -64,8 +62,6 @@ Shader "Custom/Asteroid_FireSurface"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
-                
-                // New Rim Vars
                 half4 _RimColor;
                 float _RimPower;
                 float _RimStrength;
@@ -92,7 +88,6 @@ Shader "Custom/Asteroid_FireSurface"
                 float _Shininess;
             CBUFFER_END
 
-            // --- Noise Functions (Same as before) ---
             float hash(float3 p) {
                 p = frac(p * 0.3183099 + 0.1); p *= 17.0; return frac(p.x * p.y * p.z * (p.x + p.y + p.z));
             }
@@ -150,8 +145,7 @@ Shader "Custom/Asteroid_FireSurface"
             half4 frag(Varyings IN) : SV_Target
             {
                 float3 worldPos = IN.worldPos;
-                
-                // 1. Calculate Normals
+            
                 float3 pBase = worldPos;
                 float hCenter = craterHeightAtPoint(pBase);
                 float eps = 0.05;
@@ -163,7 +157,6 @@ Shader "Custom/Asteroid_FireSurface"
                 float3 Ngeom = normalize(IN.worldNormal);
                 float3 N = normalize(lerp(Ngeom, nHeight, _NormalStrength));
 
-                // 2. Lighting Setup
                 float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - worldPos);
                 float4 shadowCoord = TransformWorldToShadowCoord(worldPos);
                 Light mainLight = GetMainLight(shadowCoord);
@@ -171,7 +164,6 @@ Shader "Custom/Asteroid_FireSurface"
                 float3 lightColor = mainLight.color;
                 float shadowAtten = mainLight.shadowAttenuation;
 
-                // 3. Basic Diffuse/Spec
                 float NdotL = max(0, dot(N, lightDir));
                 float3 diffuse = NdotL * lightColor * shadowAtten;
                 float3 H = normalize(lightDir + viewDir);
@@ -179,15 +171,10 @@ Shader "Custom/Asteroid_FireSurface"
                 float spec = pow(NdotH, _Shininess) * _SpecularIntensity * shadowAtten;
                 float3 ambient = _AmbientColor.rgb;
                 float craterOcclusion = lerp(1.0, 0.25, saturate(hCenter));
-
-                // --- 4. NEW: Rim / Fresnel Effect (The Burning Edge) ---
-                // 计算视线和法线的夹角。边缘处夹角接近90度，dot接近0，1-dot接近1。
                 float NdotV = saturate(dot(N, viewDir));
                 float fresnel = pow(1.0 - NdotV, _RimPower); 
-                // 让边缘发光颜色叠加
                 float3 rimGlow = _RimColor.rgb * fresnel * _RimStrength;
 
-                // --- 5. Inner Glow (Original Logic) ---
                 float emissionMask = 1.0 - smoothstep(_EmissionThreshold, _EmissionThreshold + _EmissionSoftness, hCenter);
                 float3 flowPos = worldPos * 3.0 + float3(0, _Time.y * _GlowFlowSpeed, 0);
                 float flowNoise = fbm(flowPos);
@@ -195,21 +182,16 @@ Shader "Custom/Asteroid_FireSurface"
                 float dynamicIntensity = lerp(0.5, 1.2, pulse);
                 float3 innerGlow = _EmissionColor.rgb * emissionMask * (flowNoise + 0.5) * dynamicIntensity;
 
-                // Combine Everything
                 float3 finalColor = _BaseColor.rgb * craterOcclusion * (ambient + diffuse) + (spec * lightColor);
-                
-                // Add Glows
+
                 finalColor += innerGlow;
-                finalColor += rimGlow; // Add the rim light on top
-
+                finalColor += rimGlow; 
                 finalColor = MixFog(finalColor, IN.fogFactor);
-
                 return half4(finalColor, 1.0);
             }
             ENDHLSL
         }
         
-        // ShadowCaster Pass (Standard)
         Pass
         {
             Name "ShadowCaster"
