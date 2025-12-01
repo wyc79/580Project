@@ -10422,6 +10422,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed6b226211ed4190a5b39579ea7bbbca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ExplosionSequenceController
+  asteroid: {fileID: 1745590543}
   edgeBlurController: {fileID: 1130379718}
   multipleDeformCircleReveal: {fileID: 1812122688}
   waitOffset: -1

@@ -4,12 +4,28 @@ using UnityEngine.InputSystem;
 
 public class ExplosionSequenceController : MonoBehaviour
 {
+
+    public GameObject asteroid;
     public EdgeBlurController edgeBlurController;
     public MultipleDeformCircleReveal multipleDeformCircleReveal;
     public float waitOffset = 0f;
+
+    private Transform asteroidTransform;
+
+    void Start()
+    {
+        if (asteroid != null) asteroidTransform = asteroid.transform;
+    }
+
     void Update()
     {
+        if (asteroid != null) asteroidTransform = asteroid.transform;
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            StartExplosion();
+        }
+
+        if (asteroidTransform != null && asteroidTransform.position.y < .01f)
         {
             StartExplosion();
         }
@@ -37,7 +53,11 @@ public class ExplosionSequenceController : MonoBehaviour
 
         if (multipleDeformCircleReveal != null)
         {
-            multipleDeformCircleReveal.TriggerReveal();
+            if (asteroidTransform != null) {
+                multipleDeformCircleReveal.TriggerReveal(asteroidTransform.position);
+            } else {
+                multipleDeformCircleReveal.TriggerReveal();
+            }
         }
     }
 }

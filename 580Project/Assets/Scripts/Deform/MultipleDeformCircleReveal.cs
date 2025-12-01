@@ -80,4 +80,11 @@ public class MultipleDeformCircleReveal : MonoBehaviour
         triggered = true;
         time = 0f;
     }
+
+    public void TriggerReveal(Vector3 center)
+    {
+        this.center = center;
+        triggered = true;
+        time = 0f;
+    }
 }
