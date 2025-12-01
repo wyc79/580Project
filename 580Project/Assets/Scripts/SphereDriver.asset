@@ -17,3 +17,7 @@ MonoBehaviour:
   endRadius: 5
   duration: 3
   feather: 0.5
+  sphereObjectPosition: {x: 1, y: -1, z: 0}
+  sphereGrowDuration: 1
+  sphereStartScale: 0.2
+  sphereTargetScale: 10

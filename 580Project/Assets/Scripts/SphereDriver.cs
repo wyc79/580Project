@@ -9,7 +9,9 @@ public class SphereDriver : ScriptableObject
     public float endRadius   = 5f;
     public float duration    = 3f;
     public float feather     = 0.5f;
-
-
     
+    public Vector3 sphereObjectPosition; 
+    public float sphereGrowDuration = 1.0f;
+    public float sphereStartScale = 0.2f;
+    public float sphereTargetScale = 10.0f;
 }

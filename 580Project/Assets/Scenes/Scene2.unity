@@ -426,9 +426,6 @@ MonoBehaviour:
   sphereObject: {fileID: 1681309305}
   blurDurationToTarget: 0.5
   blurDurationRecover: 0.3
-  sphereGrowDuration: 2
-  sphereStartScale: 0.2
-  sphereTargetScale: 10
   motionCurve:
     serializedVersion: 2
     m_Curve:
@@ -453,6 +450,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  sphereDriver: {fileID: 11400000, guid: b81d72a7b511e0e4a854cc11bbed18de, type: 2}
   startValue: 1
   targetValue: 0.6
 --- !u!114 &1130379719
@@ -656,6 +654,53 @@ MonoBehaviour:
   - {fileID: 2100000, guid: a19816f92b64e864ab183eb65bdc3ddc, type: 2}
   sphereDriver: {fileID: 11400000, guid: b81d72a7b511e0e4a854cc11bbed18de, type: 2}
   triggered: 0
+--- !u!1 &1925931248
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1925931250}
+  - component: {fileID: 1925931249}
+  m_Layer: 0
+  m_Name: Explosion Controller
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1925931249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925931248}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed6b226211ed4190a5b39579ea7bbbca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ExplosionSequenceController
+  edgeBlurController: {fileID: 1130379718}
+  multipleDeformCircleReveal: {fileID: 1812122688}
+  waitOffset: -1
+--- !u!4 &1925931250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925931248}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.54, y: -1.41837, z: 2.9333}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1988757623
 GameObject:
   m_ObjectHideFlags: 0
@@ -792,3 +837,4 @@ SceneRoots:
   - {fileID: 1812122687}
   - {fileID: 1130379720}
   - {fileID: 1681309309}
+  - {fileID: 1925931250}

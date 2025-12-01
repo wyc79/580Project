@@ -12,12 +12,10 @@ public class EdgeBlurController : MonoBehaviour
     
     public float blurDurationToTarget = 0.2f;
     public float blurDurationRecover = 0.8f;
-    
-    public float sphereGrowDuration = 1.0f;
-    public float sphereStartScale = 0.2f;
-    public float sphereTargetScale = 10.0f;
 
     public AnimationCurve motionCurve = new AnimationCurve(new Keyframe(0, 0), new Keyframe(1, 1));
+    
+    public SphereDriver sphereDriver;
     
     public float startValue = 1.0f;
     public float targetValue = 0.159f;
@@ -49,31 +47,22 @@ public class EdgeBlurController : MonoBehaviour
     {
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            TriggerEffect();
+            // TriggerEffect();
         }
     }
 
     
-    void TriggerEffect()
+    public void TriggerEffect() 
     {
-        if (_edgeBlurComponent == null) return;
-        if (Mouse.current == null) return;
-
-        Vector2 mousePos = Mouse.current.position.ReadValue();
-        
-        _hasHitPosition = false;
-        if (targetCamera != null && sphereObject != null)
+        if (globalVolume != null && globalVolume.profile.TryGet(out _edgeBlurComponent) == false)
         {
-            Ray ray = targetCamera.ScreenPointToRay(mousePos);
-            if (Physics.Raycast(ray, out RaycastHit hit, 1000f))
-            {
-                sphereObject.transform.position = hit.point;
-                _hasHitPosition = true;
-            }
+            return; 
         }
-
+        if (_edgeBlurComponent == null) return;
+        
         if (sphereObject != null)
         {
+            sphereObject.transform.position = sphereDriver.sphereObjectPosition;
             sphereObject.SetActive(false);
             sphereObject.transform.localScale = Vector3.zero;
         }
@@ -81,6 +70,7 @@ public class EdgeBlurController : MonoBehaviour
         if (_currentCoroutine != null) StopCoroutine(_currentCoroutine);
         _currentCoroutine = StartCoroutine(DoSequence());
     }
+
 
     IEnumerator DoSequence()
     {
@@ -116,25 +106,30 @@ public class EdgeBlurController : MonoBehaviour
         _edgeBlurComponent.enableEffect.value = false;
         
 
-        if (sphereObject != null && _hasHitPosition)
+        if (sphereObject != null)
         {
             sphereObject.SetActive(true);
             
-            sphereObject.transform.localScale = Vector3.one * sphereStartScale;
+            sphereObject.transform.position = sphereDriver.sphereObjectPosition;
+            
+            sphereObject.transform.localScale = Vector3.one * sphereDriver.sphereStartScale;
 
             timer = 0f;
-            while (timer < sphereGrowDuration)
+            while (timer < sphereDriver.sphereGrowDuration)
             {
                 timer += Time.deltaTime;
-                float t = Mathf.Clamp01(timer / sphereGrowDuration);
-                curveValue = motionCurve.Evaluate(t);
                 
-                float currentScale = Mathf.Lerp(sphereStartScale, sphereTargetScale, curveValue);
+                float t = Mathf.Clamp01(timer / sphereDriver.sphereGrowDuration);
+                
+                curveValue = motionCurve.Evaluate(t); 
+
+                float currentScale = Mathf.Lerp(sphereDriver.sphereStartScale, sphereDriver.sphereTargetScale, curveValue);
                 sphereObject.transform.localScale = Vector3.one * currentScale;
 
                 yield return null;
             }
-            sphereObject.transform.localScale = Vector3.one * sphereTargetScale;
+            
+            sphereObject.transform.localScale = Vector3.one * sphereDriver.sphereTargetScale;
             sphereObject.SetActive(false);
         }
         _currentCoroutine = null;
