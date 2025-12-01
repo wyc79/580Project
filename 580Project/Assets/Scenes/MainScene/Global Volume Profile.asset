@@ -111,4 +111,4 @@ MonoBehaviour:
     dimension: 1
   enableEffect:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0
