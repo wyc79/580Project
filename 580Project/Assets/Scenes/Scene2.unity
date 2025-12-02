@@ -5386,8 +5386,8 @@ MonoBehaviour:
   globalVolume: {fileID: 1130379719}
   targetCamera: {fileID: 0}
   sphereObject: {fileID: 143667755}
-  blurDurationToTarget: 0.5
-  blurDurationRecover: 0.3
+  blurDurationToTarget: 0.7
+  blurDurationRecover: 0.5
   motionCurve:
     serializedVersion: 2
     m_Curve:
