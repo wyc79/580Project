@@ -1,3 +1,7 @@
+// archive shader for the deform shader
+// originally used to apply onto sphere
+// not used after changing to given model 
+
 Shader "Custom/DeformArchive"
 {
     Properties

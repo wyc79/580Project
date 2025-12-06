@@ -1,3 +1,5 @@
+// simple mod to the default lit shader to apply a reveal mask to the texture
+
 Shader "Custom/RevealFadeOut"
 {
     Properties

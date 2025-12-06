@@ -93,6 +93,8 @@ Shader "Custom/Deform"
             CBUFFER_END
 
             // -------- Hash & Worley 3D --------
+            // manually hashed 
+            // used for ground/lava visual effect and detail normal
             float3 hash3(float3 p)
             {
                 p = float3(
@@ -149,6 +151,7 @@ Shader "Custom/Deform"
             }
 
             // -------- Perlin-style 3D noise --------
+            // used for normal detail
             float fade(float t)
             {
                 return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
@@ -194,6 +197,8 @@ Shader "Custom/Deform"
             }
 
             // -------- Helpers: crack / corner from Worley --------
+            // Calculate the cell gap and local crack width from the Worley noise
+            // also have a "rounded" corner effect
             void ComputeCrackData(float3 worley, out float cellGap, out float localCrackWidth)
             {
                 float F1 = worley.x;
@@ -210,7 +215,7 @@ Shader "Custom/Deform"
                 localCrackWidth = _CrackWidth * (1.0 + cornerFactor * _CornerExpand * 4.0);
             }
 
-            // -------- Vertex --------
+            // -------- Vertex Shader --------
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -242,12 +247,12 @@ Shader "Custom/Deform"
                 return OUT;
             }
 
-            // -------- Fragment --------
+            // -------- Fragment Shader --------
             float4 frag(Varyings IN) : SV_Target
             {
                 float3 positionWS = IN.positionWS;
 
-                // ----- Reveal mask: 0 = before deform, 1 = fully deformed -----
+                // Reveal mask: 0 = before deform, 1 = fully deformed
                 float distToCenter = distance(positionWS, _RevealCenter.xyz);
                 float innerRadius  = _RevealRadius - _RevealFeather * 0.5;
                 float outerRadius  = _RevealRadius + _RevealFeather * 0.5;
@@ -269,6 +274,7 @@ Shader "Custom/Deform"
                 float tWidth     = max(threshold2 - threshold1, 1e-5);
 
                 // -------- Detail normal --------
+                // slight random noise applied to normal to add detail
                 float3 N = normalize(IN.normalWS);
 
                 float3 up = (abs(N.y) < 0.999) ? float3(0,1,0) : float3(1,0,0);
@@ -315,7 +321,7 @@ Shader "Custom/Deform"
 
                 N = normalize(finalNormal);
 
-                // -------- Blend original ↔ deformed by revealMask --------
+                // -------- Blend original & deformed by revealMask --------
                 float3 originalColor = _BaseColor.rgb;
                 float3 surfaceColor  = lerp(originalColor, effectColor, revealMask);
 
