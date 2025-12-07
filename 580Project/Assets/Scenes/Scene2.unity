@@ -5667,6 +5667,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: fe3dfb3a9a3572644ae74e9bb8ca46c8, type: 2}
   - {fileID: 2100000, guid: a19816f92b64e864ab183eb65bdc3ddc, type: 2}
   sphereDriver: {fileID: 11400000, guid: b81d72a7b511e0e4a854cc11bbed18de, type: 2}
+  sphere: {fileID: 143667755}
   triggered: 0
 --- !u!1 &1883166345
 GameObject:

@@ -6,7 +6,8 @@ public class MultipleDeformCircleReveal : MonoBehaviour
     public Material[] materials;
 
     public SphereDriver sphereDriver;
-
+    public GameObject sphere;
+    
     // public Transform revealCenter;
     // public float startRadius = 0f;
     // public float endRadius   = 5f;
@@ -63,9 +64,11 @@ public class MultipleDeformCircleReveal : MonoBehaviour
             time = 0f;
             return;
         }
-        float radius = Mathf.Lerp(startRadius, endRadius, t);
+        
+        //float radius = Mathf.Lerp(startRadius, endRadius, t);
         // radius = Mathf.Lerp(startRadius, endRadius, t);
-
+        
+        float radius = 0.5f * sphere.transform.lossyScale.x;
         foreach (var mat in materials)
         {
             if (!mat) continue;
