@@ -29,6 +29,8 @@ University of Southern California CSCI 580 Fall 2025 Final Project
         └── TutorialInfo						# (not used)
 ```
 
+## Instruction to run
+
 Load the project into the Unity editor, and run the project after it has been successfully loaded. 
 
 Hit play in the editor. The scene will play automatically. Press space to replay the terrain deformation effect (the asteroid will not fall).
