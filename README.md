@@ -24,8 +24,9 @@ University of Southern California CSCI 580 Fall 2025 Final Project
         │   ├── DeformShader				    # Deform & fade out shader & material
         │   │   └── DeformMaterials	            # materials created from deform shader
         │   ├── ForceField                      # Shockwave Shader
+        │   ├── Lighting                        # Asteroid and lighting effect
         │   └── RadialImpact                    # Radial Impact Post-Processing
-        ├── Texture								# (not used)
+        ├── Texture								# Particle system
         └── TutorialInfo						# (not used)
 ```
 
