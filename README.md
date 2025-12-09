@@ -23,8 +23,8 @@ University of Southern California CSCI 580 Fall 2025 Final Project
         ├── Shaders
         │   ├── DeformShader				    # Deform & fade out shader & material
         │   │   └── DeformMaterials	            # materials created from deform shader
-        │   ├── ForceField
-        │   └── RadialImpact
+        │   ├── ForceField                      # Shockwave Shader
+        │   └── RadialImpact                    # Radial Impact Post-Processing
         ├── Texture								# (not used)
         └── TutorialInfo						# (not used)
 ```
